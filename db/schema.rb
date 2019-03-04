@@ -27,8 +27,6 @@ ActiveRecord::Schema.define(version: 3) do
   create_table "users_releases", id: false, force: :cascade do |t|
     t.integer "user_id"
     t.integer "release_id"
-    t.index ["release_id"], name: "index_users_releases_on_release_id"
-    t.index ["user_id"], name: "index_users_releases_on_user_id"
   end
 
 end
