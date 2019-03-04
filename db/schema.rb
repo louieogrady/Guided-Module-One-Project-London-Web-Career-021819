@@ -10,18 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2) do
+ActiveRecord::Schema.define(version: 3) do
 
   create_table "releases", force: :cascade do |t|
     t.string "artist"
     t.string "title"
-    t.date   "release_date"
+    t.date   "released"
     t.string "genre"
     t.string "format"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "username"
+  end
+
+  create_table "users_releases", id: false, force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "release_id"
+    t.index ["release_id"], name: "index_users_releases_on_release_id"
+    t.index ["user_id"], name: "index_users_releases_on_user_id"
   end
 
 end
