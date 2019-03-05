@@ -5,5 +5,6 @@ gem "sinatra-activerecord"
 gem "sqlite3"
 gem "pry"
 gem "require_all"
-gem 'discogs-wrapper' # gets discogs-wrapper - https://github.com/buntine/discogs
+gem 'discogs-wrapper' # discogs-api-wrapper - https://github.com/buntine/discogs
 gem 'rake'
+gem 'tty-prompt'

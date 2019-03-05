@@ -27,7 +27,6 @@ u2 = User.find_by_username("Kai")
 
 u3 = User.find_by_username("Harry")
 
-
 r1 = Release.find_by_title("Rio Grande")
 
 r2 = Release.find_by_title("News Of The World")
@@ -52,5 +51,7 @@ u1.releases << r4
 
 u2.releases << r6
 
-#r2 = Release.new(artist: "Edward Flex", title: "Do You Believe In Hawaii?", released: 2009, genre: "Vaporwave", format: "CDr")
-#r2.save
+wrapper = Discogs::Wrapper.new("My test app")
+
+#test
+artist = wrapper.get_artist("329937")
