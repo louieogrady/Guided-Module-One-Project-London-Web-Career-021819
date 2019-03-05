@@ -2,6 +2,7 @@
 
 Release.delete_all   # Delete these when necessary
 User.delete_all      # Delete these when necessary
+UsersRelease.delete_all # Delete these when necessary
 
 Release.create(artist: "Metallica", title: "Ride The Lightning", released: 1984, genre: "Thrash Metal", format: "Vinyl")
 
@@ -50,8 +51,3 @@ u2.releases << r5
 u1.releases << r4
 
 u2.releases << r6
-
-wrapper = Discogs::Wrapper.new("My test app")
-
-#test
-artist = wrapper.get_artist("329937")
