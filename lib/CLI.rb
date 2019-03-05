@@ -1,11 +1,35 @@
 class CommandLineInterface
 
+  def run
+    greet
+    initial_options
+    menu
+  end
+
   def greet
     puts "Welcome to Your Music Database, the command line solution to facilitate your music collecting addiction!"
   end
 
   def initial_options
     puts "\nPress 1 to search the Discogs API.\nPress 2 to search your own music collection"
+  end
+
+  def menu
+    answer = gets.chomp
+    case answer
+    when "1"
+      sleep 1
+      system "clear"
+      search_discogs_menu
+    when "2"
+      sleep 1
+      system "clear"
+      search_local_db_submenu
+    else
+      "not a valid entry"
+      sleep 1
+      run
+    end
   end
 
   def search_discogs_menu
@@ -15,12 +39,36 @@ class CommandLineInterface
       puts "\nPlease input your auth key"
       authkey = gets.chomp
       auth_wrapper = Discogs::Wrapper.new("My test app", user_token: authkey)
+      sleep 1
+      system "clear"
+      search_discogs_api
     elsif answer == "n"
       puts "\nUsing a test account instead"
-      auth_wrapper = Discogs::Wrapper.new("My test app", user_token: "tjaSQQrCCwfvkiutVBUXNBLNikYkcwMHVLVEHbcA") # CHANGE THIS TO NEW ACCOUNT AUTH KEY
+      sleep 1
+      system "clear"
+      search_discogs_api_with_test_account
     else
       initial_options
     end
+  end
+
+  def search_discogs_api_with_test_account
+    auth_wrapper = Discogs::Wrapper.new("My test app", user_token: "tjaSQQrCCwfvkiutVBUXNBLNikYkcwMHVLVEHbcA") # CHANGE THIS TO NEW ACCOUNT AUTH KEY
+    puts "\nPress 1 to search the Discogs API by release title. Press 2 to return to the main menu."
+    answer = gets.chomp
+    if answer == "1"
+      discogs_release_title_search
+    elsif answer == "2"
+      run
+    else
+      search_discogs_api_with_test_account
+    end
+  end
+
+  def discogs_release_title_search
+    puts "\nSearch the Discogs API by release title"
+    answer = gets.chomp
+    search = auth_wrapper.search(answer, :per_page => 10, :type => :artist)
   end
 
   def search_local_db_submenu
@@ -73,7 +121,9 @@ class CommandLineInterface
   end
 
   def return_all_artists_and_releases
-    Release.all.each {|releases| puts "title: #{releases.artist} artist: #{releases.title} released: #{releases.released} genre: #{releases.genre} format: #{releases.format}" }
+    Release.all.each do |releases|
+      puts "title: #{releases.artist} artist: #{releases.title} released: #{releases.released} genre: #{releases.genre} format: #{releases.format}"
+    end
     puts "\npress r to return to the music collection search menu\n"
     answer = gets.chomp
     if answer == "r"
@@ -84,39 +134,20 @@ class CommandLineInterface
   end
 
   def search_local_db_by_release_title
-    puts "\nPlease enter a release title to search the database"
+    puts "Please enter a release title to search the database"
     title = gets.chomp
     if r = Release.find_by_title(title)
-      puts "title: #{r.artist}, artist: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
+      puts "\n title: #{r.artist}, artist: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       search_again?
     else
-      puts "Release not found"
+      puts "\nRelease not found"
       search_again?
     end
   end
 
-  def menu
-    answer = gets.chomp
-    case answer
-    when "1"
-      sleep 1
-      system "clear"
-      search_discogs_menu
-    when "2"
-      sleep 1
-      system "clear"
-      search_local_db_submenu
-    else
-      "not a valid entry"
-      run
-    end
-  end
 
-  def run
-    greet
-    initial_options
-    menu
-  end
+
+
 
 end
 
