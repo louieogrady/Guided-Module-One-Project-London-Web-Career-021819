@@ -5,14 +5,19 @@ User.delete_all      # Delete these when necessary
 
 #Movie.create(title: "Wargames", release_date: 1983, director: "John Badham", lead: "Matthew Broderick", in_theaters: false)
 
-# use CREATE HERE instead of save 
+# use CREATE HERE instead of save
 
 r1 = Release.new(artist: "Metallica", title: "Ride The Lightning", released: 1984, genre: "Thrash Metal", format: "Vinyl")
 r1.save
+
 r2 = Release.new(artist: "Edward Flex", title: "Do You Believe In Hawaii?", released: 2009, genre: "Vaporwave", format: "CDr")
 r2.save
 
+r3 = Release.new(artist: "Womack & Womack", title: "Eyes", released: 1985, genre: "Soul", format: "Vinyl")
+r3.save
 
+u1 = User.new(username: "Louie")
+u1.save
 
 
 # hotline_bling = Song.create(:name=>'Hotline Bling')

@@ -1,8 +1,8 @@
 require "pry"
 
 class User < ActiveRecord::Base
-  has_and_belongs_to_many :releases
-
+  has_many :users_releases
+  has_many :releases, :through => :users_releases
 
 
 
