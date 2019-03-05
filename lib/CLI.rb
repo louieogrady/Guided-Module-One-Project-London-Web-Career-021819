@@ -13,7 +13,8 @@ class CommandLineInterface
   end
 
   def return_all_artists_and_releases
-    Release.all.each {|x| puts "#{x.artist} - #{x.title}" }
+    Release.all.each {|x| puts "title: #{x.artist} artist: #{x.title} released: #{x.released} genre: #{x.genre} format: #{x.format}" }
+
     #puts "#{Releases.artists #{Release.titles}"
   end
 
@@ -33,29 +34,10 @@ class CommandLineInterface
     if r = Release.find_by_title(title)
       puts "title: #{r.artist}, artist: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
     else
-      puts "No release found"
+      puts "Release not found"
     end
     #do_you_want_to_add_this?(r)
     return_all_artists_and_releases
   end
 
 end
-
-
-
-
-
-# The find lines method takes in an instance of station and returns that station's lines. How can we
-# pass the station that we found in find_station as the argument in find_lines? How about in our run method!
-
-# Lets set the return value of find_station to a variable and pass that variable to the find_lines method.
-
-# Finally, let's output those lines to our users! Create a method that iterates over lines and
-# outputs the line name to the console!
-
-#
-# def show_lines(lines)
-#
-# lines.each do |line|
-
-#how could we output each line's name here?
