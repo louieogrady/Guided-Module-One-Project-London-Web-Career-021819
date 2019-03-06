@@ -81,11 +81,10 @@ class CommandLineInterface
 
     if response == "y"
       puts "#{artist_search.results.first.profile}"
-      #puts "This artist has #{artist_search.results.releases.count}"
       #puts "This artist has #{artist_releases.releases.count} releases"
       sleep 1
       puts "Please enter the name of the release you wish to view."
-      release_answer = gets.chomp.strip
+      release_answer = gets.chomp.titleize
       #artist_releases = auth_wrapper.get_artist_releases(artist_search.results.first.id)
       titles = auth_wrapper.get_artist_releases(artist_search.results.first.id).releases.map {|release_titles| release_titles.title}
       if titles.find {|titles| titles == release_answer} # checks if the user query matches the release title for that artist.
@@ -99,7 +98,8 @@ class CommandLineInterface
         collection_response = gets.chomp
         if "y" || "yes" || "Yes"
           Release.create(artist: auth_wrapper.get_artist(artist_search.results.first.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
-          puts "Added to your music collection"
+          puts "Added to your music collection. Returning to main menu"
+          run
         else
           search_discogs_menu
         end
@@ -112,9 +112,38 @@ class CommandLineInterface
     elsif response == "n"
       puts "\nDid you mean #{artist_search.results.second.title}? press y for yes or n for no"
       response2 = gets.chomp
+
       if response2 == "y"
-        puts "\nPlease enter the name of the release you wish to view"
-      elsif response2 == "n"
+        #puts "\nPlease enter the name of the release you wish to view"
+        #puts "#{artist_search.results.second.profile}"
+        #puts "This artist has #{artist_releases.releases.count} releases"
+        puts "\nPlease enter the name of the release you wish to view."
+        release_answer = gets.chomp.titleize
+        #artist_releases = auth_wrapper.get_artist_releases(artist_search.results.first.id)
+        titles = auth_wrapper.get_artist_releases(artist_search.results.second.id).releases.map {|release_titles| release_titles.title}
+        if titles.find {|titles| titles == release_answer} # checks if the user query matches the release title for that artist.
+          puts "Release Found"
+          release_information = auth_wrapper.get_artist_releases(artist_search.results.second.id).releases.find {|titles| titles.title == release_answer}
+          #puts "#{auth_wrapper.get_artist_releases(artist_search.results.first.id).releases.find {|titles| titles.title == release_answer}}" # returns release information
+          sleep 1
+          puts "\nArtist: #{auth_wrapper.get_artist(artist_search.results.second.id).name}\nTitle:  #{release_information.title}\nReleased: #{release_information.year}\nGenre: #{release_information.genre}\nFormat: #{release_information.format}"
+
+          puts "Would you like to add this to your collection? y or n?"
+          collection_response = gets.chomp
+          if "y" || "yes" || "Yes"
+            Release.create(artist: auth_wrapper.get_artist(artist_search.results.second.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+            puts "Added to your music collection. Returning to main menu"
+            run
+          else
+            search_discogs_menu
+          end
+        else
+          puts "Release not found"
+          sleep 1
+          search_discogs_menu
+        end
+
+    elsif response2 == "n"
         puts "\nDid you mean #{artist_search.results.third.title}? press y for yes or n for no"
         response3 = gets.chomp
         if response3 == "y"
@@ -147,12 +176,14 @@ class CommandLineInterface
       system "clear"
       return_all_artists_and_releases
     elsif answer == "3"
+      sleep 1
       destroy_local_db_entry
     elsif answer == "m"
       sleep 1
       system "clear"
       run
     else
+      sleep 1
       search_local_db_submenu
     end
   end
@@ -161,7 +192,7 @@ class CommandLineInterface
     puts "\nPlease enter a release title to search the database"
     title = gets.chomp.downcase
     if r = Release.find_by_title(title)
-      puts "title: #{r.artist}, artist: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
+      puts "artist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       search_again?
     else
       puts "Release not found"
@@ -188,22 +219,24 @@ class CommandLineInterface
 
   def return_all_artists_and_releases
     Release.all.each do |releases|
-      puts "title: #{releases.artist} artist: #{releases.title} released: #{releases.released} genre: #{releases.genre} format: #{releases.format}"
+      puts "artist: #{releases.artist} title: #{releases.title} released: #{releases.released} genre: #{releases.genre} format: #{releases.format}"
     end
-    puts "\npress r to return to the music collection search menu\n"
+    puts "\npress m to return to the music collection search menu\n"
     answer = gets.chomp
-    if answer == "r"
+    if answer == "m"
+      sleep 1
       system "clear"
       search_local_db_submenu
-    else nil
+    else
+      nil
     end
   end
 
   def search_local_db_by_release_title
     puts "Please enter a release title to search the database"
-    title = gets.chomp.downcase
-    if r = Release.find_by_title(title).downcase
-      puts "\n title: #{r.artist}, artist: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
+    title = gets.chomp.titlize
+    if r = Release.find_by_title(title)
+      puts "\n artist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       search_again?
     else
       puts "\nRelease not found"
@@ -213,15 +246,15 @@ class CommandLineInterface
 
   def destroy_local_db_entry
     puts "Please input the title of the release you would like to remove from your collection"
-    title = gets.chomp
+    title = gets.chomp.titleize
     if Release.find_by_title(title)
       Release.where(title: title).delete_all
       sleep 1
-      puts "Release deleted. Returning to main menu"
+      puts "\nRelease deleted. Returning to main menu"
       sleep 1
     run
     else
-      puts "Can not find release with that title in your database"
+      puts "\nCan not find release with that title in your database"
       sleep 1
       run
     end
