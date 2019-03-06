@@ -1,5 +1,11 @@
 class CommandLineInterface
 
+  def find_or_create_by(username)
+    # Find or create new user
+    User.find_or_create_by(username: username.chomp.strip)
+  end
+
+
   def run
     system "clear"
     greet
@@ -9,6 +15,9 @@ class CommandLineInterface
 
   def greet
     puts "Welcome to Your Music Database, the command line solution to facilitate your music collecting addiction!"
+    puts "\nPlease Login."
+    login = gets.chomp
+    find_or_create_by(login)
   end
 
   def initial_options
@@ -133,7 +142,6 @@ class CommandLineInterface
             puts "Added to your music collection. Returning to main menu"
             run
           else
-            system "clear"
             search_discogs_menu
           end
         else
@@ -266,7 +274,7 @@ class CommandLineInterface
 
   def search_local_db_by_release_title
     puts "Please enter a release title to search the database"
-    title = gets.chomp.titlize
+    title = gets.chomp.titleize
     if r = Release.find_by_title(title)
       puts "\n artist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       search_again?
