@@ -1,5 +1,3 @@
-
-
 class CommandLineInterface
 
   def run
@@ -56,9 +54,9 @@ class CommandLineInterface
   end
 
   def search_discogs_api_with_test_account
-    #binding.pry
     puts "\nPress 1 to search the Discogs API by release title. Press 2 to return to the main menu."
     answer = gets.chomp
+    system "clear"
     if answer == "1"
       discogs_release_title_search
     elsif answer == "2"
@@ -81,7 +79,6 @@ class CommandLineInterface
 
     if response == "y"
       puts "#{artist_search.results.first.profile}"
-      #puts "This artist has #{artist_releases.releases.count} releases"
       sleep 1
       puts "Please enter the name of the release you wish to view."
       release_answer = gets.chomp.titleize
@@ -96,7 +93,7 @@ class CommandLineInterface
 
         puts "Would you like to add this to your collection? y or n?"
         collection_response = gets.chomp
-        if "y" || "yes" || "Yes"
+        if "y"
           Release.create(artist: auth_wrapper.get_artist(artist_search.results.first.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
           puts "Added to your music collection. Returning to main menu"
           run
@@ -140,6 +137,7 @@ class CommandLineInterface
         else
           puts "Release not found"
           sleep 1
+          syste "clear"
           search_discogs_menu
         end
 
@@ -147,7 +145,36 @@ class CommandLineInterface
         puts "\nDid you mean #{artist_search.results.third.title}? press y for yes or n for no"
         response3 = gets.chomp
         if response3 == "y"
-          puts "\nPlease enter the name of the release you wish to view"
+            #puts "\nPlease enter the name of the release you wish to view"
+            #puts "#{artist_search.results.second.profile}"
+            #puts "This artist has #{artist_releases.releases.count} releases"
+            puts "\nPlease enter the name of the release you wish to view."
+            release_answer = gets.chomp.titleize
+            #artist_releases = auth_wrapper.get_artist_releases(artist_search.results.first.id)
+            titles = auth_wrapper.get_artist_releases(artist_search.results.third.id).releases.map {|release_titles| release_titles.title}
+            if titles.find {|titles| titles == release_answer} # checks if the user query matches the release title for that artist.
+              puts "Release Found"
+              release_information = auth_wrapper.get_artist_releases(artist_search.results.third.id).releases.find {|titles| titles.title == release_answer}
+              #puts "#{auth_wrapper.get_artist_releases(artist_search.results.first.id).releases.find {|titles| titles.title == release_answer}}" # returns release information
+              sleep 1
+              puts "\nArtist: #{auth_wrapper.get_artist(artist_search.results.third.id).name}\nTitle:  #{release_information.title}\nReleased: #{release_information.year}\nGenre: #{release_information.genre}\nFormat: #{release_information.format}"
+
+              puts "Would you like to add this to your collection? y or n?"
+              collection_response = gets.chomp
+              if "y" || "yes" || "Yes"
+                Release.create(artist: auth_wrapper.get_artist(artist_search.results.third.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+                puts "Added to your music collection. Returning to main menu"
+                run
+              else
+                search_discogs_menu
+              end
+            else
+              puts "Release not found"
+              sleep 1
+              syste "clear"
+              search_discogs_menu
+            end
+
         elsif response3 == "n"
           puts "Please search again"
           sleep 1
@@ -252,7 +279,7 @@ class CommandLineInterface
       sleep 1
       puts "\nRelease deleted. Returning to main menu"
       sleep 1
-    run
+      run
     else
       puts "\nCan not find release with that title in your database"
       sleep 1
