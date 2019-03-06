@@ -79,24 +79,36 @@ class CommandLineInterface
     prompt = puts "\nDid you mean #{artist_search.results.first.title}? press y for yes or n for no"
     response = gets.chomp
 
-  #  auth_wrapper.get_artist_releases(artist_search.results.first.id)
-
     if response == "y"
       puts "#{artist_search.results.first.profile}"
       #puts "This artist has #{artist_search.results.releases.count}"
       #puts "This artist has #{artist_releases.releases.count} releases"
       sleep 1
-      puts "\nPlease enter the name of the release you wish to view."
-      release_answer = gets.chomp
+      puts "Please enter the name of the release you wish to view."
+      release_answer = gets.chomp.strip
       #artist_releases = auth_wrapper.get_artist_releases(artist_search.results.first.id)
       titles = auth_wrapper.get_artist_releases(artist_search.results.first.id).releases.map {|release_titles| release_titles.title}
-      titles.find {|titles| title.title == release_answer}
+      if titles.find {|titles| titles == release_answer} # checks if the user query matches the release title for that artist.
+        puts "Release Found"
+        release_information = auth_wrapper.get_artist_releases(artist_search.results.first.id).releases.find {|titles| titles.title == release_answer}
+        #puts "#{auth_wrapper.get_artist_releases(artist_search.results.first.id).releases.find {|titles| titles.title == release_answer}}" # returns release information
+        sleep 1
+        puts "\nArtist: #{auth_wrapper.get_artist(artist_search.results.first.id).name}\nTitle:  #{release_information.title}\nReleased: #{release_information.year}\nGenre: #{release_information.genre}\nFormat: #{release_information.format}"
 
-      #puts artist_releases.releases.first.title
-      #artist_id = auth_wrapper.get_artist_releases(artist_search.results.first.id).first
+        puts "Would you like to add this to your collection? y or n?"
+        collection_response = gets.chomp
+        if "y" || "yes" || "Yes"
+          Release.create(artist: auth_wrapper.get_artist(artist_search.results.first.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+          puts "Added to your music collection"
+        else
+          search_discogs_menu
+        end
+      else
+        puts "Release not found"
+        sleep 1
+        search_discogs_menu
+      end
 
-      #artist_search.get_artist_releases
-      #artist_search.results.first.get_artist_releases
     elsif response == "n"
       puts "\nDid you mean #{artist_search.results.second.title}? press y for yes or n for no"
       response2 = gets.chomp
@@ -280,3 +292,9 @@ end
   #   puts "\nPlease enter a release title to search the database"
   #   gets.chomp
   # end
+
+  #puts artist_releases.releases.first.title
+  #artist_id = auth_wrapper.get_artist_releases(artist_search.results.first.id).first
+
+  #artist_search.get_artist_releases
+  #artist_search.results.first.get_artist_releases
