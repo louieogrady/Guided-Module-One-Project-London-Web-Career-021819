@@ -1,6 +1,7 @@
 class CommandLineInterface
 
   def run
+    system "clear"
     greet
     initial_options
     menu
@@ -11,7 +12,7 @@ class CommandLineInterface
   end
 
   def initial_options
-    puts "\nPress 1 to search the Discogs API.\nPress 2 to search your own music collection"
+    puts "\nPress 1 to search the Discogs API.\nPress 2 to search and edit your own music collection"
   end
 
   def menu
@@ -53,7 +54,7 @@ class CommandLineInterface
   end
 
   def search_discogs_api_with_test_account
-    auth_wrapper = Discogs::Wrapper.new("My test app", user_token: "tjaSQQrCCwfvkiutVBUXNBLNikYkcwMHVLVEHbcA") # CHANGE THIS TO NEW ACCOUNT AUTH KEY
+    auth_wrapper = Discogs::Wrapper.new("My test app", user_token: "HxMncBsZapqMGnwfoDrZZsRvHZevQOzPhZcHmKwC") # AUTH KEY
     puts "\nPress 1 to search the Discogs API by release title. Press 2 to return to the main menu."
     answer = gets.chomp
     if answer == "1"
@@ -66,13 +67,13 @@ class CommandLineInterface
   end
 
   def discogs_release_title_search
-    puts "\nSearch the Discogs API by release title"
+    puts "\nPlease enter a release title to Search the Discogs API."
     answer = gets.chomp
     search = auth_wrapper.search(answer, :per_page => 10, :type => :artist)
   end
 
   def search_local_db_submenu
-    puts "Press 1 to search your collection by release title\nPress 2 to list all records in your collection\nPress m to return to main menu"
+    puts "Press 1 to search your collection by release title\nPress 2 to list all records in your collection\nPress 3 to remove a release from your collection\nPress m to return to main menu"
     answer = gets.chomp
     if answer == "1"
       sleep 1
@@ -82,6 +83,8 @@ class CommandLineInterface
       sleep 1
       system "clear"
       return_all_artists_and_releases
+    elsif answer == "3"
+      destroy_local_db_entry
     elsif answer == "m"
       sleep 1
       system "clear"
@@ -142,6 +145,22 @@ class CommandLineInterface
     else
       puts "\nRelease not found"
       search_again?
+    end
+  end
+
+  def destroy_local_db_entry
+    puts "Please input the title of the release you would like to remove from your collection"
+    title = gets.chomp
+    if Release.find_by_title(title)
+      Release.where(title: title).delete_all
+      sleep 1
+      puts "Release deleted. Returning to main menu"
+      sleep 1
+    run
+    else
+      puts "Can not find release with that title in your database"
+      sleep 1
+      run
     end
   end
 
