@@ -1,3 +1,5 @@
+
+
 class CommandLineInterface
 
   def run
@@ -49,12 +51,12 @@ class CommandLineInterface
       system "clear"
       search_discogs_api_with_test_account
     else
-      initial_options
+      run
     end
   end
 
   def search_discogs_api_with_test_account
-    auth_wrapper = Discogs::Wrapper.new("My test app", user_token: "HxMncBsZapqMGnwfoDrZZsRvHZevQOzPhZcHmKwC") # AUTH KEY
+    #binding.pry
     puts "\nPress 1 to search the Discogs API by release title. Press 2 to return to the main menu."
     answer = gets.chomp
     if answer == "1"
@@ -67,9 +69,58 @@ class CommandLineInterface
   end
 
   def discogs_release_title_search
-    puts "\nPlease enter a release title to Search the Discogs API."
-    answer = gets.chomp
-    search = auth_wrapper.search(answer, :per_page => 10, :type => :artist)
+    auth_wrapper = Discogs::Wrapper.new("My test app", user_token: "HxMncBsZapqMGnwfoDrZZsRvHZevQOzPhZcHmKwC") # AUTH KEY
+
+    puts "\nPlease enter the name of the artist whose release you wish to search."
+
+    artist_answer = gets.chomp
+    artist_search = auth_wrapper.search(artist_answer, :per_page => 10, :type => :artist)
+
+    prompt = puts "\nDid you mean #{artist_search.results.first.title}? press y for yes or n for no"
+    response = gets.chomp
+
+  #  auth_wrapper.get_artist_releases(artist_search.results.first.id)
+
+    if response == "y"
+      puts "#{artist_search.results.first.profile}"
+      #puts "This artist has #{artist_search.results.releases.count}"
+      #puts "This artist has #{artist_releases.releases.count} releases"
+      sleep 1
+      puts "\nPlease enter the name of the release you wish to view."
+      release_answer = gets.chomp
+      #artist_releases = auth_wrapper.get_artist_releases(artist_search.results.first.id)
+      titles = auth_wrapper.get_artist_releases(artist_search.results.first.id).releases.map {|release_titles| release_titles.title}
+      titles.find {|titles| title.title == release_answer}
+
+      #puts artist_releases.releases.first.title
+      #artist_id = auth_wrapper.get_artist_releases(artist_search.results.first.id).first
+
+      #artist_search.get_artist_releases
+      #artist_search.results.first.get_artist_releases
+    elsif response == "n"
+      puts "\nDid you mean #{artist_search.results.second.title}? press y for yes or n for no"
+      response2 = gets.chomp
+      if response2 == "y"
+        puts "\nPlease enter the name of the release you wish to view"
+      elsif response2 == "n"
+        puts "\nDid you mean #{artist_search.results.third.title}? press y for yes or n for no"
+        response3 = gets.chomp
+        if response3 == "y"
+          puts "\nPlease enter the name of the release you wish to view"
+        elsif response3 == "n"
+          puts "Please search again"
+          sleep 1
+          system "clear"
+          discogs_release_title_search
+        else
+          nil
+        end
+      else
+        nil
+      end
+    else
+      nil
+    end
   end
 
   def search_local_db_submenu
@@ -96,7 +147,7 @@ class CommandLineInterface
 
   def search_local_db
     puts "\nPlease enter a release title to search the database"
-    title = gets.chomp
+    title = gets.chomp.downcase
     if r = Release.find_by_title(title)
       puts "title: #{r.artist}, artist: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       search_again?
@@ -138,8 +189,8 @@ class CommandLineInterface
 
   def search_local_db_by_release_title
     puts "Please enter a release title to search the database"
-    title = gets.chomp
-    if r = Release.find_by_title(title)
+    title = gets.chomp.downcase
+    if r = Release.find_by_title(title).downcase
       puts "\n title: #{r.artist}, artist: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       search_again?
     else
