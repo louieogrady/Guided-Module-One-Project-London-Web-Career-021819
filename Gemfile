@@ -8,3 +8,4 @@ gem "require_all"
 gem 'discogs-wrapper' # discogs-api-wrapper - https://github.com/buntine/discogs
 gem 'rake'
 gem 'tty-prompt'
+gem 'rainbow'
