@@ -20,14 +20,16 @@ class CommandLineInterface
   end
 
   def greet
-    puts "Welcome to Your Music Database, the command line solution to facilitate your music collecting addiction!"
-    puts "\nPlease Login."
+    puts "Welcome to Your Music Database, the command line solution for your music collecting needs!"
+    puts "\nPlease enter your username:"
     username = gets.chomp
     find_or_create_by(username)
+    sleep 1
+    system "clear"
   end
 
   def return_to_main_menu_greeting
-    puts "Welcome to Your Music Database, the command line solution to facilitate your music collecting addiction!"
+    puts "Welcome to Your Music Database, the command line solution for your music collecting needs!"
   end
 
   def initial_options
@@ -40,7 +42,7 @@ class CommandLineInterface
     when "1"
       sleep 1
       system "clear"
-      search_discogs_api_with_test_account
+      search_discogs_api
     when "2"
       sleep 1
       system "clear"
@@ -56,27 +58,7 @@ class CommandLineInterface
     end
   end
 
-  # def search_discogs_menu
-  #   puts "\nDo you have a Discogs account? input y for yes, n for no, or any other key for main menu"
-  #   answer = gets.chomp
-  #   if answer == "y"
-  #     puts "\nPlease input your auth key"
-  #     authkey = gets.chomp
-  #     auth_wrapper = Discogs::Wrapper.new("My test app", user_token: authkey)
-  #     sleep 1
-  #     system "clear"
-  #     search_discogs_api
-  #   elsif answer == "n"
-  #     puts "\nUsing a test account instead"
-  #     sleep 1
-  #     system "clear"
-  #     search_discogs_api_with_test_account
-  #   else
-  #     run2
-  #   end
-  # end
-
-  def search_discogs_api_with_test_account
+  def search_discogs_api
     puts "\nPress 1 to search the Discogs API by release title. Press 2 to return to the main menu."
     answer = gets.chomp
     system "clear"
@@ -88,7 +70,7 @@ class CommandLineInterface
       run2
     else
       sleep 1
-      search_discogs_api_with_test_account
+      search_discogs_api
     end
   end
 
@@ -125,13 +107,13 @@ class CommandLineInterface
           puts "Added to your music collection. Returning to main menu"
           run2
         else
-          search_discogs_api_with_test_account
+          search_discogs_api
         end
       else
         puts "Release not found"
         sleep 1
         system "clear"
-        search_discogs_api_with_test_account
+        search_discogs_api
       end
 
     elsif response == "n"
@@ -156,17 +138,18 @@ class CommandLineInterface
           puts "Would you like to add this to your collection? y or n?"
           collection_response = gets.chomp.strip
           if collection_response == "y" || "yes" || "Yes"
-            Release.create(artist: auth_wrapper.get_artist(artist_search.results.second.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+            rel = Release.create(artist: auth_wrapper.get_artist(artist_search.results.second.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+            @u.releases << rel
             puts "Added to your music collection. Returning to main menu"
             run2
           else
-            search_discogs_api_with_test_account
+            search_discogs_api
           end
         else
           puts "Release not found"
           sleep 1
           system "clear"
-          search_discogs_api_with_test_account
+          search_discogs_api
         end
 
     elsif response2 == "n"
@@ -190,18 +173,19 @@ class CommandLineInterface
               puts "Would you like to add this to your collection? y or n?"
               collection_response = gets.chomp.strip
               if collection_response == "y" || "yes" || "Yes"
-                Release.create(artist: auth_wrapper.get_artist(artist_search.results.third.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+                rel = Release.create(artist: auth_wrapper.get_artist(artist_search.results.third.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+                @u.releases << rel
                 puts "Added to your music collection. Returning to main menu"
                 run2
               else
                 system "clear"
-                search_discogs_api_with_test_account
+                search_discogs_api
               end
             else
               puts "Release not found"
               sleep 1
               system "clear"
-              search_discogs_api_with_test_account
+              search_discogs_api
             end
 
         elsif response3 == "n"
@@ -336,8 +320,25 @@ class CommandLineInterface
 end
 
 
-
-
+# def search_discogs_menu
+#   puts "\nDo you have a Discogs account? input y for yes, n for no, or any other key for main menu"
+#   answer = gets.chomp
+#   if answer == "y"
+#     puts "\nPlease input your auth key"
+#     authkey = gets.chomp
+#     auth_wrapper = Discogs::Wrapper.new("My test app", user_token: authkey)
+#     sleep 1
+#     system "clear"
+#     search_discogs_api
+#   elsif answer == "n"
+#     puts "\nUsing a test account instead"
+#     sleep 1
+#     system "clear"
+#     search_discogs_api
+#   else
+#     run2
+#   end
+# end
 
   # gets.chomp
   # title = gets_user_input
