@@ -20,6 +20,7 @@ class CommandLineInterface
   end
 
   def greet
+    system "clear"
     #puts Rainbow("").red
 puts Rainbow("
 #     #                         #     #
@@ -38,8 +39,8 @@ puts Rainbow("
     #     # #    #   #   #    # #    # #    # #    # #
     ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
     puts Rainbow("Welcome to Your Music Database, the command line solution for your
-                   music collecting needs!").bright.red
-    puts "\n\nPlease enter your username:"
+                  music collecting needs!").bright.red
+    puts "\nPlease enter your username:"
     username = gets.chomp
     find_or_create_by(username)
     sleep 1
@@ -47,11 +48,30 @@ puts Rainbow("
   end
 
   def return_to_main_menu_greeting
+    system "clear"
     puts "Welcome to Your Music Database, the command line solution for your music collecting needs!"
   end
 
   def initial_options
-    puts "\nPress 1 to search the Discogs API.\n\nPress 2 to search and edit your own music collection.\n\nPress 3 to logout"
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
+        puts Rainbow("Welcome to Your Music Database, the command line solution for your
+                      music collecting needs!").bright.red
+    puts "\nPress 1 to search the Discogs API by release title.\n\nPress 2 to search and edit your own music collection.\n\nPress 3 to logout"
   end
 
   def menu
@@ -60,7 +80,7 @@ puts Rainbow("
     when "1"
       sleep 1
       system "clear"
-      search_discogs_api
+      discogs_release_title_search
     when "2"
       sleep 1
       system "clear"
@@ -80,26 +100,42 @@ puts Rainbow("
     end
   end
 
-  def search_discogs_api
-    puts "Press 1 to search the Discogs API by release title. \n\nPress 2 to return to the main menu."
-    answer = gets.chomp
-    system "clear"
-    if answer == "1"
-      sleep 1
-      discogs_release_title_search
-    elsif answer == "2"
-      sleep 1
-      run2
-    else
-      sleep 1
-      search_discogs_api
-    end
-  end
+  # def search_discogs_api
+  #   puts "Press 1 to search the Discogs API by release title. \n\nPress 2 to return to the main menu."
+  #   answer = gets.chomp
+  #   system "clear"
+  #   if answer == "1"
+  #     sleep 1
+  #     discogs_release_title_search
+  #   elsif answer == "2"
+  #     sleep 1
+  #     run2
+  #   else
+  #     sleep 1
+  #     search_discogs_api
+  #   end
+  # end
 
   def discogs_release_title_search
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
     auth_wrapper = Discogs::Wrapper.new("My test app", user_token: "HxMncBsZapqMGnwfoDrZZsRvHZevQOzPhZcHmKwC") # AUTH KEY
 
-    puts "Please enter the name of the artist whose release you wish to search."
+    puts "\nPlease enter the name of the artist whose release you wish to search"
 
     artist_answer = gets.chomp.strip
     artist_search = auth_wrapper.search(artist_answer, :per_page => 150, :type => :artist)
@@ -108,7 +144,7 @@ puts Rainbow("
     response = gets.chomp.strip
 
     if response == "y" || response == "yes" || response == "Yes" || response == "Y"
-      puts "Please enter the name of the release you wish to add to your collection"
+      puts "\nPlease enter the name of the release you wish to add to your collection"
       release_answer = gets.chomp.strip.titleize
       titles = auth_wrapper.get_artist_releases(artist_search.results.first.id, :per_page =>600).releases.map {|release_titles| release_titles.title}
       if titles.find {|titles| titles == release_answer} # checks if the user query matches the release title for that artist.
@@ -129,13 +165,13 @@ puts Rainbow("
         else
           sleep 1
           system "clear"
-          search_discogs_api
+          discogs_release_title_search
         end
       else
-        puts "Release not found"
+        puts "Release not found. Returning to main menu"
         sleep 1
         system "clear"
-        search_discogs_api
+        run2
       end
 
     elsif response == "n" || response == "no" || response == "No" || response == "N"
@@ -161,13 +197,13 @@ puts Rainbow("
               puts "Added to your music collection. Returning to main menu"
               run2
           else
-            search_discogs_api
+            discogs_release_title_search
           end
         else
-          puts "Release not found"
+          puts "Release not found. Returning to main menu"
           sleep 1
           system "clear"
-          search_discogs_api
+          run2
         end
 
     elsif response2 == "n"
@@ -196,20 +232,20 @@ puts Rainbow("
               else
                 sleep 1
                 system "clear"
-                search_discogs_api
+                discogs_release_title_search
               end
             else
-              puts "Release not found"
+              puts "Release not found. Returning to main menu"
               sleep 1
               system "clear"
-              search_discogs_api
+              run2
             end
 
         elsif response3 == "n"
-          puts "Please search again"
+          puts "No further matches found. Returning to main menu"
           sleep 1
           system "clear"
-          discogs_release_title_search
+          run2
         else
           discogs_release_title_search
         end
@@ -217,15 +253,31 @@ puts Rainbow("
         discogs_release_title_search
       end
     else
-      puts "Please search again"
+      puts "Please search again."
       sleep 1
       system "clear"
-      discogs_release_title_search
+      run2
     end
   end
 
   def search_local_db_submenu
-    puts "Press 1 to search your collection by release title\n\nPress 2 to list all records in your collection\n\nPress 3 to remove a release from your collection\n\nPress 4 to amend the genre for a release\n\nPress 5 to find all releases in your collection by artist name\n\nPress 6 to add a rating to a release in your collection\n\nPress m to return to main menu"
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
+    puts "\nPress 1 to search your collection by release title\n\nPress 2 to list all records in your collection\n\nPress 3 to remove a release from your collection\n\nPress 4 to amend the genre for a release\n\nPress 5 to find all releases in your collection by artist name\n\nPress 6 to add a rating to a release in your collection\n\nPress m to return to main menu"
     answer = gets.chomp
     if answer == "1"
       sleep 1
@@ -263,29 +315,65 @@ puts Rainbow("
   end
 
   def rate_releases
-    puts "Please enter the name of the release you want to add a rating to."
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
+    puts "\nPlease enter the name of the release you want to add a rating to."
     title = gets.chomp.strip.titleize
     puts "Please enter a rating between 1 and 5 for the release."
     rating = gets.chomp.strip.titleize
     @u.rate_release(title, rating)
+    sleep 1
     puts "rating added."
+    sleep 1
+    run2
   end
 
   def search_local_db
-    puts "Please enter a release title to search the database"
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
+    puts "\nPlease enter a release title to search the database"
     title = gets.chomp.strip.titleize
     if r = Release.find_by_title(title)
     #  binding.pry
       puts "artist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       search_again?
     else
-      puts "Release not found"
+      puts "\nRelease not found"
+      sleep 1
       search_again?
     end
   end
 
   def search_again?
-    puts "Search again? input y for yes, and n to return to main menu"
+    puts "\nSearch again? input y for yes, and n to return to main menu"
     answer = gets.chomp
     if answer == "y"
       sleep 1
@@ -321,7 +409,23 @@ puts Rainbow("
   end
 
   def search_local_db_by_release_title
-    puts "Please enter a release title to search your database"
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
+    puts "\nPlease enter a release title to search your database"
     title = gets.chomp.titleize
     if r = @u.releases.where(title)
       puts "\n artist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}\n"
@@ -335,40 +439,73 @@ puts Rainbow("
   end
 
   def change_genre_entry
-    puts "Please enter the release title that you want to change the genre for:"
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
+    puts "\nPlease enter the release title that you want to change the genre for:"
     title = gets.chomp.titleize
+    sleep 1
     if r = @u.releases.find_by_title(title)
-      puts "\nartist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}, rating: {r.rating}"
+      puts "\nartist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
       sleep 1
     else
-      puts "Release not found"
+      puts "\nRelease not found. Returning to main menu"
+      sleep 1
       run2
     end
       puts "\nPlease input the new genre for this release"
       input = gets.chomp.titleize
       r.genre = input
-      r.genre.save
-      #binding.pry
+      r.save
+      sleep 1
       puts "\nGenre changed"
       sleep 1
       run2
   end
 
     def find_releases_by_artist_name
-      puts "Please enter the artist name to see all their releases that are in your collection"
+      puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
+      puts "\nPlease enter the artist name to see all their releases that are in your collection"
       ar = gets.chomp.titleize
       r = @u.releases
       x = r.select { |item| item.artist == ar }
-    #  binding.pry
         if x.map do |x| x.artist == ar
-        puts "artist: #{x.artist}, title: #{x.title}, released: #{x.released}, genre: #{x.genre}, format: #{x.format}"
-        sleep 2
+        puts "\nartist: #{x.artist}, title: #{x.title}, released: #{x.released}, genre: #{x.genre}, format: #{x.format}"
       end
+        puts "\nPress any key to return to main menu"
         sleep 1
-        puts "Press any key to return to main menu"
+        answer = gets
         run2
       else
-        puts "This artist was not found in your collection"
+        puts "\nThis artist was not found in your collection"
         sleep 1
         puts "Press any key to return to main menu"
         answer = gets
@@ -377,6 +514,22 @@ puts Rainbow("
     end
 
   def destroy_local_db_entry
+    puts Rainbow("
+#     #                         #     #
+ #   #   ####  #    # #####     ##   ## #    #  ####  #  ####
+  # #   #    # #    # #    #    # # # # #    # #      # #    #
+   #    #    # #    # #    #    #  #  # #    #  ####  # #
+   #    #    # #    # #####     #     # #    #      # # #
+   #    #    # #    # #   #     #     # #    # #    # # #    #
+   #     ####   ####  #    #    #     #  ####   ####  #  ####
+
+    ######
+    #     #   ##   #####   ##   #####    ##    ####  ######
+    #     #  #  #    #    #  #  #    #  #  #  #      #
+    #     # #    #   #   #    # #####  #    #  ####  #####
+    #     # ######   #   ###### #    # ######      # #
+    #     # #    #   #   #    # #    # #    # #    # #
+    ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
     puts "\nPlease input the title of the release you would like to remove from your collection."
     title = gets.chomp.titleize
     if Release.find_by_title(title)
@@ -402,19 +555,15 @@ puts Rainbow("
     end
   end
 
-  # def compare_collections
-  #   binding.pry
-  #   users = User.all
-  #   releases_for_all_users = users.map {|releases| releases.title releases.released}
-  #   #puts @u.releases && release_for_all_users if
-  # end
 
 end
 
-
-
-
-
+# def compare_collections
+#   binding.pry
+#   users = User.all
+#   releases_for_all_users = users.map {|releases| releases.title releases.released}
+#   #puts @u.releases && release_for_all_users if
+# end
 
 # def search_discogs_menu
 #   puts "\nDo you have a Discogs account? input y for yes, n for no, or any other key for main menu"
@@ -448,7 +597,6 @@ end
   # else
   # initial_options
   # answer = gets.chomp
-
 
   # def do_you_want_to_add_this?(r)
   #   puts "Do you want to add this to your music collection?"
