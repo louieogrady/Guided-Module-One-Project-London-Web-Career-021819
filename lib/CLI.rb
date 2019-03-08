@@ -554,26 +554,25 @@ puts Rainbow("
     #     # #    #   #   #    # #    # #    # #    # #
     ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
     puts "\nPlease input the title of the release you would like to remove from your collection"
-    title = gets.chomp.titleize
+    title = gets.chomp.strip.titleize
     if Release.find_by_title(title)
       Release.where(title: title).delete_all
       sleep 1
       puts "\nRelease deleted. Returning to main menu"
+      @u.reload
       sleep 1
       run2
     else
-      puts "\nCan not find release with that title in your database. Press 1 to try again or press or press m to return to the main menu"
-      answer = gets.chomp
+      puts "\nCan not find release with that title in your database. Press 1 to try again or press or any other key to return to the main menu"
+      answer = gets.chomp.strip
       if answer == "1"
         sleep 1
         system "clear"
         destroy_local_db_entry
-      elsif answer == "m"
+      else
         sleep 1
         system "clear"
         run2
-      else
-        nil
       end
     end
   end
