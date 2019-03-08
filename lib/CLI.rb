@@ -14,7 +14,6 @@ class CommandLineInterface
 
   def run2
     system "clear"
-    return_to_main_menu_greeting
     initial_options
     menu
   end
@@ -153,12 +152,12 @@ puts Rainbow("
         sleep 1
         puts "\nArtist: #{auth_wrapper.get_artist(artist_search.results.first.id).name}\nTitle:  #{release_information.title}\nReleased: #{release_information.year}\nGenre: #{release_information.genre}\nFormat: #{release_information.format}"
         #binding.pry
-        puts "Would you like to add this to your collection? y or n?"
+        puts "\nWould you like to add this to your collection? y or n?"
         collection_response = gets.chomp.strip
         if collection_response == "y"
           rel = Release.find_or_create_by(artist: auth_wrapper.get_artist(artist_search.results.first.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
             @u.releases << rel
-            puts "Added to your music collection. Returning to main menu"
+            puts "\nAdded to your music collection. Returning to main menu"
             sleep 1
             system "clear"
             run2
@@ -189,18 +188,18 @@ puts Rainbow("
           sleep 1
           puts "\nArtist: #{auth_wrapper.get_artist(artist_search.results.second.id).name}\nTitle:  #{release_information.title}\nReleased: #{release_information.year}\nGenre: #{release_information.genre}\nFormat: #{release_information.format}"
 
-          puts "Would you like to add this to your collection? y or n?"
+          puts "\nWould you like to add this to your collection? y or n?"
           collection_response = gets.chomp.strip
           if collection_response == "y" || collection_response == "yes" || collection_response == "Yes" || collection_response == "Y"
             rel = Release.find_or_create_by(artist: auth_wrapper.get_artist(artist_search.results.second.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
               @u.releases << rel
-              puts "Added to your music collection. Returning to main menu"
+              puts "\nAdded to your music collection. Returning to main menu"
               run2
           else
             discogs_release_title_search
           end
         else
-          puts "Release not found. Returning to main menu"
+          puts "\nRelease not found. Returning to main menu"
           sleep 1
           system "clear"
           run2
@@ -225,7 +224,7 @@ puts Rainbow("
               if collection_response == "y" || collection_response == "yes" || collection_response == "Yes" || collection_response == "Y"
                 rel = Release.find_or_create_by(artist: auth_wrapper.get_artist(artist_search.results.third.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
                 @u.releases << rel
-                puts "Added to your music collection. Returning to main menu"
+                puts "\nAdded to your music collection. Returning to main menu"
                 sleep 1
                 system "clear"
                 run2
@@ -235,7 +234,7 @@ puts Rainbow("
                 discogs_release_title_search
               end
             else
-              puts "Release not found. Returning to main menu"
+              puts "\nRelease not found. Returning to main menu"
               sleep 1
               system "clear"
               run2
@@ -333,14 +332,28 @@ puts Rainbow("
     ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
     puts "\nPlease enter the name of the release you want to add a rating to."
     title = gets.chomp.strip.titleize
-    puts "Please enter a rating between 1 and 5 for the release."
+    puts "\nPlease enter a rating between 1 and 5 for the release."
     rating = gets.chomp.strip.titleize
     @u.rate_release(title, rating)
     sleep 1
-    puts "rating added."
-    sleep 1
-    run2
+    release = @u.releases.find_by_title(title)
+    user_release = @u.users_releases.find {|user_release| user_release.release_id == release.id}
+    if r = Release.find_by_title(title)
+      puts "\nartist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}, rating: #{@u.users_releases.find {|user_release| user_release.release_id == release.id}.rating}"
+      puts "\nrating added."
+      sleep 3
+      run2
+    else
+      puts "\nRelease not found. Returning to main menu"
+      sleep 1
+      run2
+    end
+
+    # puts "\nartist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}, rating: {user_release.rating}"
+
   end
+
+
 
   def search_local_db
     puts Rainbow("
@@ -363,7 +376,11 @@ puts Rainbow("
     title = gets.chomp.strip.titleize
     if r = Release.find_by_title(title)
     #  binding.pry
-      puts "artist: #{r.artist}, title: #{r.title}, released: #{r.released}, genre: #{r.genre}, format: #{r.format}"
+    release = @u.releases.find_by_title(title)
+    #binding.pry
+    user_release = @u.users_releases.find {|user_release| user_release.release_id == release.id}
+    sleep 1
+      puts "\nartist: #{r.artist} title: #{r.title} released: #{r.released} genre: #{r.genre} format: #{r.format} rating: #{user_release.rating}"
       search_again?
     else
       puts "\nRelease not found"
@@ -375,11 +392,11 @@ puts Rainbow("
   def search_again?
     puts "\nSearch again? input y for yes, and n to return to main menu"
     answer = gets.chomp
-    if answer == "y"
+    if answer == "y" || answer == "yes" || answer == "Yes" || answer == "Y"
       sleep 1
       system "clear"
       search_local_db
-    elsif answer == "n"
+    elsif answer == "n" || answer == "N" || answer == "No" || answer == "no"
       sleep 1
       system "clear"
       run2
@@ -394,8 +411,14 @@ puts Rainbow("
   end
 
   def return_all_artists_and_releases
-    sorted_releases_by_artist_name.each do |releases|
-      puts "\nartist: #{releases.artist} title: #{releases.title} released: #{releases.released} genre: #{releases.genre} format: #{releases.format}"
+    # x = @u.releases.sort_by { |release| release.artist }.map(&:title)
+    #
+    # release = @u.releases.find_by_title(x)
+    # user_release = @u.users_releases.find {|user_release| user_release.release_id == release.id}
+
+    sorted_releases_by_artist_name.each  do |releases|
+      puts "\nartist: #{releases.artist} title: #{releases.title} released: #{releases.released} genre: #{releases.genre} format: #{releases.format}" #rating: #{user_release.rating}
+      #binding.pry
     end
     puts "\n\npress m to return to the music collection search menu\n"
     answer = gets.chomp
@@ -530,7 +553,7 @@ puts Rainbow("
     #     # ######   #   ###### #    # ######      # #
     #     # #    #   #   #    # #    # #    # #    # #
     ######  #    #   #   #    # #####  #    #  ####  ###### ").bright.blue
-    puts "\nPlease input the title of the release you would like to remove from your collection."
+    puts "\nPlease input the title of the release you would like to remove from your collection"
     title = gets.chomp.titleize
     if Release.find_by_title(title)
       Release.where(title: title).delete_all
