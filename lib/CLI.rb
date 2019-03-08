@@ -177,7 +177,7 @@ puts Rainbow("
       puts "Did you mean #{artist_search.results.second.title}? press y for yes or n for no"
       response2 = gets.chomp.strip
 
-      if response2 == "y" || response == "yes" || response == "Yes" || response == "Y"
+      if response2 == "y" || response2 == "yes" || response2 == "Yes" || response2 == "Y"
 
         puts "\nPlease enter the name of the release you wish to add to your collection"
         release_answer = gets.chomp.strip.titleize
