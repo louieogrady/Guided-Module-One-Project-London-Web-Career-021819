@@ -1,4 +1,8 @@
-# Module One Project 
+##############
+To use this app please replace the existing discogs auth key (now disabled) with your own discogs auth key in CLI.rb where noted.
+##############
+
+# Module One Project
 
 Congratulations, you're at the end of module one! You've worked crazy hard to get here and have learned a ton.
 
