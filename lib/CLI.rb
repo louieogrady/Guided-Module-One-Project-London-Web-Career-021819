@@ -154,8 +154,14 @@ puts Rainbow("
         #binding.pry
         puts "\nWould you like to add this to your collection? y or n?"
         collection_response = gets.chomp.strip
-        if collection_response == "y"
-          rel = Release.find_or_create_by(artist: auth_wrapper.get_artist(artist_search.results.first.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
+        if collection_response == "y" || collection_response == "yes" || collection_response == "Yes" || collection_response == "Y"
+
+attributes = {artist: auth_wrapper.get_artist(artist_search.results.first.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format}
+
+rel = Release.find_or_create_by(attributes)
+
+
+        #  rel = Release.find_or_create_by(artist: auth_wrapper.get_artist(artist_search.results.first.id).name, title: release_information.title, released: release_information.year, genre: release_information.genre, format: release_information.format)
             @u.releases << rel
             puts "\nAdded to your music collection. Returning to main menu"
             sleep 1
